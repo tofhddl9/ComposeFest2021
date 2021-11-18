@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,39 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeLayoutsTheme {
-                ScrollingList()
+                MyOwnColumn {
+                    Text("MyOwnColumn")
+                            Text("places items")
+                            Text("vertically.")
+                            Text("We've done it by hand!")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MyOwnColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        val placeables = measurables.map { measurable ->
+            // Measure each child
+            measurable.measure(constraints)
+        }
+
+        var yPosition = 0
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            // Place children in the parent layout
+            placeables.forEach { placeable ->
+                // Position item on the screen
+                placeable.placeRelative(x = 0, y = yPosition)
+                yPosition += placeable.height
             }
         }
     }
